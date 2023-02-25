@@ -26,24 +26,30 @@ def about():
 @app.route('/upload', methods=['POST', 'GET'])
 def upload():
     # Instantiate your form class
-
+    form = LoginForm()
     # Validate file upload on submit
     if form.validate_on_submit():
+        
         # Get file data and save to your uploads folder
+        
 
         flash('File Saved', 'success')
         return redirect(url_for('home')) # Update this to redirect the user to a route that displays all uploaded image files
 
     return render_template('upload.html')
 
-
+@login_required
 @app.route('/login', methods=['POST', 'GET'])
 def login():
     form = LoginForm()
+    
+    if form.validate_on_submit():
+        username = form.username.data
+        password = form.password.data
 
     # change this to actually validate the entire form submission
     # and not just one field
-    if form.username.data:
+        user = db.session.execute(db.select(UserProfile).filter_by(username=username)).scalar()
         # Get the username and password values from the form.
 
         # Using your model, query database for a user based on the username
