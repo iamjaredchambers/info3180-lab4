@@ -1,6 +1,6 @@
 import os
 from app import app, db, login_manager
-from flask import render_template, request, redirect, url_for, flash, session, abort
+from flask import render_template, request, redirect, url_for, flash, session, abort, send_from_directory
 from flask_login import login_user, logout_user, current_user, login_required
 from werkzeug.utils import secure_filename
 from app.models import UserProfile
@@ -33,15 +33,20 @@ def upload():
     if request.method == "POST" and photoupload.validate_on_submit():
          photoupload = photoupload.file.data
          
-         flash('File Uploaded', 'success')
+         
          filename = secure_filename(photoupload.filename)
          photoupload.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+         flash('File Uploaded', 'success')
          
          
     
     return render_template('upload.html', photoupload = photoupload)
    #return redirect(url_for('home'))  
 # Update this to redirect the user to a route that displays all uploaded image files
+@app.route('/upload/<filename>') 
+def get_image(filename):
+    root = os.cwd()
+    return send_from_directory(os.path.join(os.getcwd(),app.config['UPLOAD_FOLDER']), filename)
     
 
 
@@ -67,6 +72,17 @@ def login():
             
         flash_errors(form)
     return render_template("login.html", form=form)
+
+def get_uploaded_images():
+    filelist = []
+    rootdir = os.getcwd()
+    #print (rootdir)
+    for subdir, dirs, files in os.walk(rootdir + '/some/folder'):
+        for file in files:
+            filelist.append(file)
+    return filelist
+
+
 
         
         
@@ -97,6 +113,11 @@ def flash_errors(form):
                 getattr(form, field).label.text,
                 error
 ), 'danger')
+@app.route('/files')
+def files():
+    pictures = get_uploaded_images
+    return render_template("files.html", allpics = pictures)
+
 
 @app.route('/<file_name>.txt')
 def send_text_file(file_name):
