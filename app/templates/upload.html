@@ -4,10 +4,11 @@
 <h1 class="page-header">File Upload</h1>
 
 {% include 'flash_messages.html' %}
-{{ form.csrf_token }}
+
 
 {# Add the appropriate method and enctype attributes to the form tag to allow for file uploads #}
 <form action="{{ url_for('upload') }}" method = "post" enctype="multipart/form-data">
+  {{ form.csrf_token }}
   <div class = "form-group nb-3">
     {{form.file.label}}
     {{form.file}}

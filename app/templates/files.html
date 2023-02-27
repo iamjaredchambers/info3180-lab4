@@ -5,14 +5,15 @@
     <h1 class = "title"> UPLOADS </h1>
 
      <div class = "images">
-       
-        <ul class = "photo_images">
-            {% for file in files: %}
-            
-            <img src = "{{ url_for('get_image', filename=file) }}"/>
-            
-            {% endfor %}
-        </ul>
+       <li class = "listphotos">
+           <ul class = "photo_images">
+               {% for file in pictures: %}
+               
+               <img src = "{{ url_for('get_image', filename=file) }}" img height="200px", img width="200px"/>
+               
+               {% endfor %}
+           </ul>
+       </li>
      </div>
 
 {% endblock %}

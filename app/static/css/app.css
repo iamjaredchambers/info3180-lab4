@@ -18,3 +18,26 @@ body {
     border-top-left-radius: 0;
     border-top-right-radius: 0;
 }
+
+.photo_images
+{
+   display:grid;
+   grid-template-columns : 500px 500px 500px;
+   margin-bottom: 20px;
+   text-decoration: none;
+   list-style: none;
+
+}
+
+.photo_images img
+{
+    margin-bottom: 100px;
+
+}
+
+.listphotos
+{
+   text-decoration: none;
+   list-style: none;
+}
+

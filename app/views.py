@@ -29,17 +29,18 @@ def about():
 def upload():
    
     # Instantiate your form class
-        photoupload = UploadForm()
+    photoupload = UploadForm()
     # Validate file upload on submit
-        if request.method == 'POST':
-            if photoupload.validate_on_submit():
-                photo = photoupload.file.data
-            
-                filename = secure_filename(photo.filename)
-                photo.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
-                flash('File Uploaded', 'success')
-                return redirect(url_for('files'))  
-        return render_template('upload.html', form = photoupload)
+    if request.method == 'POST':
+        if photoupload.validate_on_submit():
+            photo = photoupload.file.data
+        
+            filename = secure_filename(photo.filename)
+            photo.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+            flash('File Uploaded', 'success')
+    
+            return redirect(url_for('files'))  
+    return render_template('upload.html', form = photoupload)
    
 # Update this to redirect the user to a route that displays all uploaded image files
 @app.route('/upload/<filename>') 
@@ -129,7 +130,7 @@ def files():
     if not session.get('logged_in'):
         abort(401)
 
-    pictures = get_uploaded_images
+    pictures = get_uploaded_images()
     return render_template("files.html", pictures = pictures)
 
 
