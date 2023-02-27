@@ -21,32 +21,31 @@ def home():
 @app.route('/about/')
 def about():
     """Render the website's about page."""
-    return render_template('about.html', name="Mary Jane")
+    return render_template('about.html', name=" Jared Chambers")
 
 
 @app.route('/upload', methods=['POST', 'GET'])
 @login_required
 def upload():
+   
     # Instantiate your form class
-    photoupload = UploadForm()
+        photoupload = UploadForm()
     # Validate file upload on submit
-    if request.method == "POST" and photoupload.validate_on_submit():
-         photoupload = photoupload.file.data
-         
-         
-         filename = secure_filename(photoupload.filename)
-         photoupload.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
-         flash('File Uploaded', 'success')
-         
-         
-    
-    return render_template('upload.html', photoupload = photoupload)
-   #return redirect(url_for('home'))  
+        if request.method == 'POST':
+            if photoupload.validate_on_submit():
+                photo = photoupload.file.data
+            
+                filename = secure_filename(photo.filename)
+                photo.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+                flash('File Uploaded', 'success')
+                return redirect(url_for('files'))  
+        return render_template('upload.html', form = photoupload)
+   
 # Update this to redirect the user to a route that displays all uploaded image files
 @app.route('/upload/<filename>') 
 def get_image(filename):
-    root = os.cwd()
-    return send_from_directory(os.path.join(os.getcwd(),app.config['UPLOAD_FOLDER']), filename)
+    rootdir = os.getcwd()
+    return send_from_directory(rootdir + '/' + app.config['UPLOAD_FOLDER'], filename)
     
 
 
@@ -66,6 +65,7 @@ def login():
         if user is not None and  check_password_hash(user.password, password):
             login_user(user) 
             flash('Logged in successfully.', 'success')
+            session['logged_in'] = True
             return redirect(url_for("upload"))
         else:
             flash('Username or Password is incorrect', 'danger') 
@@ -74,13 +74,21 @@ def login():
     return render_template("login.html", form=form)
 
 def get_uploaded_images():
-    filelist = []
     rootdir = os.getcwd()
     #print (rootdir)
-    for subdir, dirs, files in os.walk(rootdir + '/some/folder'):
+    filelist = []
+    for subdir, dirs, files in os.walk(rootdir + '/uploads'):
         for file in files:
             filelist.append(file)
-    return filelist
+        return filelist
+
+
+@app.route('/logout')
+@login_required
+def logout():
+    logout_user()
+    flash('You have been logged out!')
+    return redirect(url_for('home'))
 
 
 
@@ -113,10 +121,16 @@ def flash_errors(form):
                 getattr(form, field).label.text,
                 error
 ), 'danger')
+            
+          
 @app.route('/files')
+@login_required
 def files():
+    if not session.get('logged_in'):
+        abort(401)
+
     pictures = get_uploaded_images
-    return render_template("files.html", allpics = pictures)
+    return render_template("files.html", pictures = pictures)
 
 
 @app.route('/<file_name>.txt')

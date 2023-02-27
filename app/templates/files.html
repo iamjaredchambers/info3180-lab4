@@ -3,18 +3,16 @@
 {%block main%}
 
     <h1 class = "title"> UPLOADS </h1>
-     {% include flash_messages.html% }
 
      <div class = "images">
-        {% for photo in allpics %}
+       
         <ul class = "photo_images">
-            <img class = "uploadedimage" src = "{{url_for('get_image'), filename = photo}}"  alt = "Uploaded Images"/>
-
+            {% for file in files: %}
+            
+            <img src = "{{ url_for('get_image', filename=file) }}"/>
+            
+            {% endfor %}
         </ul>
-        
-        
-        {%endfor%}
      </div>
-
 
 {% endblock %}
